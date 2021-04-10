@@ -1,87 +1,98 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <random>
+#include <chrono>
 
 
-int maximumElementArray(int array[], int index) {
-
-    int n;
-    int max = array[0];
-
-    for (n = 1; n < index; n++) {
-        if (array[n] > max)
-            max = array[n];
+void bucketSortVoid(float array[], int numberOfBuckets)
+{
+    std::vector<std::vector<float>> buckets(numberOfBuckets);
+    for (int i = 0; i < numberOfBuckets; i++) {
+        buckets[int(numberOfBuckets * array[i])].push_back(array[i]);
     }
-    return max;
+    for (int i = 0; i < numberOfBuckets; i++) {
+        std::sort(buckets[i].begin(), buckets[i].end());
+    }
+
+    int index = 0;
+    for (int i = 0; i < numberOfBuckets; i++) {
+        for (size_t j = 0; j < buckets[i].size(); j++) {
+            array[index++] = buckets[i][j];
+        }
+    }
 }
 
-int minimumElementArray(int array[], int index) {
-
-    int n;
-    int max = array[0];
-
-    for (n = 1; n < index; n++) {
-        if (array[n] < max)
-            max = array[n];
+std::vector<float> bucketSortReturningVector(float array[], int numberOfBuckets)
+{
+    std::vector<std::vector<float>> buckets(numberOfBuckets);
+    for (int i = 0; i < numberOfBuckets; i++) {
+        buckets[int(numberOfBuckets * array[i])].push_back(array[i]);
     }
-    return max;
-}
+    for (int i = 0; i < numberOfBuckets; i++) {
+        std::sort(buckets[i].begin(), buckets[i].end());
+    }
 
+    std::vector<float> result;
+    for (int i = 0; i < numberOfBuckets; i++) {
+        for (size_t j = 0; j < buckets[i].size(); j++) {
+            result.push_back(buckets[i][j]);
 
-int bucketSort(int array[], int numberOfBuckets) {
-
-    int arraySize = sizeof(array) / sizeof(array[0]);
-
-    int maximumElement = maximumElementArray(array, arraySize + 1);
-    int minimumElement = minimumElementArray(array, arraySize + 1);
-    int range = (maximumElement - minimumElement) / numberOfBuckets;
-
-    int constantValue = numberOfBuckets;
-    //("%d", arraySize);
-
-    int* bucketList = new int[numberOfBuckets];
-    int bucketSize = sizeof(*bucketList) / sizeof(bucketList[0]);
-    //1. create n arrays of amound of NumberOfBuckets
-    for (int i = 0; i <= numberOfBuckets; i++) {
-        int test[4];
-        bucketList[numberOfBuckets] = *test;
+        }
+    }
         
-    }
-   
-    
-    //2. creating index for each number, and add them to the right index in the array
-    for (int i = 0; i < arraySize - 1; i++) {
-        int bucketIndex = (i - minimumElement) / range;
-        bucketList[bucketIndex] = i;
-       
-    }
-
-    for (int i = 0; i < bucketSize - 1; i++) {
-        std::cout << bucketList[i] << std::endl;
-    }
-    /*
-    //3. sort the array
-    for (int i = 0; i < bucketList.size(); i++) {
-        bucketList[i] //sort
-    }
-
-    //4. add the sorted array to a final list
-    for (int i = 0; i < bucketList.size(); i++) {
-        //new array
-        newArray.push(bucketList[i]);
-    }
-    */
-    return 0;
-
+    return result;
 }
-
 
 int main() {
+    
+    /* Random declerations */
+    std::random_device rnd_d;
+    std::mt19937 rng(rnd_d());
+    std::uniform_real_distribution<float> uniform_dist(0, 1);
 
-    int test[] = { 10,20,4, 45};
 
-    bucketSort(test, 4);
+    constexpr size_t SIZE = 1000000;
+    /* Allocate the array on the heap. The array might be too large for the stack */
+    float* arr = new float[SIZE];
+    /* Fill the array with randomly distributed floats */
+    for (int i = 0; i < SIZE; i++) {
+        arr[i] = uniform_dist(rng);
+    }
 
+    /* Time measures */
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+
+    auto t1 = high_resolution_clock::now();
+    /* Sort */
+    bucketSortVoid(arr, SIZE);
+    //bucketSort2(arr, SIZE);
+    auto t2 = high_resolution_clock::now();
+
+    /* Getting number of milliseconds as an integer. */
+    auto ms_int = duration_cast<milliseconds>(t2 - t1);
+
+    auto k1 = high_resolution_clock::now();
+    /* Sort */
+    bucketSortReturningVector(arr, SIZE);
+    //bucketSort2(arr, SIZE);
+    auto k2 = high_resolution_clock::now();
+    /* Getting number of milliseconds as an integer. */
+    auto ks_int = duration_cast<milliseconds>(k2 - k1);
+
+    std::cout << "Bucket Sort void, not returning array" << std::endl;
+    std::cout << ms_int.count() << "ms\n";
+
+    std::cout << "Bucket Sort vector, returning a vector" << std::endl;
+    std::cout << ks_int.count() << "ms\n";
+        
+
+   
+    /* Delete the array */
+    delete[] arr;
     return 0;
 
 
