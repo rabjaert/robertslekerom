@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <random>
 #include <chrono>
+#include <iterator>
 
 
+//taken much from geeksforgeeks for test purposes only..
 void bucketSortVoid(float array[], int numberOfBuckets)
 {
     std::vector<std::vector<float>> buckets(numberOfBuckets);
@@ -44,6 +46,32 @@ std::vector<float> bucketSortReturningVector(float array[], int numberOfBuckets)
     return result;
 }
 
+std::vector<float> bucketSortReturningVectorWithNBuckets(float intFromFile[], int numberOfBuckets, int arraySize)
+{
+    
+    std::vector<std::vector<float>> buckets((arraySize / numberOfBuckets));
+    for (int i = 0; i < arraySize; i++) {
+        buckets[int(numberOfBuckets * intFromFile[i])].push_back(intFromFile[i]);
+    }
+   
+    for (int i = 0; i < buckets.size(); i++) {
+        std::sort(buckets[i].begin(), buckets[i].end());
+    }
+
+    std::vector<float> result;
+    for (int i = 0; i < numberOfBuckets; i++) {
+        //std::cout << "bucket: " << i << std::endl;
+        //std::cout << std::endl;
+        for (size_t j = 0; j < buckets[i].size(); j++) {
+           // std::cout << buckets[i][j] << std::endl;
+            result.push_back(buckets[i][j]);
+        }
+        
+    }
+    
+    return result;
+}
+
 int main() {
     
     /* Random declerations */
@@ -53,13 +81,14 @@ int main() {
 
 
     constexpr size_t SIZE = 1000000;
+    constexpr int nBuckets = 10;
     /* Allocate the array on the heap. The array might be too large for the stack */
     float* arr = new float[SIZE];
     /* Fill the array with randomly distributed floats */
     for (int i = 0; i < SIZE; i++) {
         arr[i] = uniform_dist(rng);
     }
-
+    
     /* Time measures */
     using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
@@ -83,14 +112,27 @@ int main() {
     /* Getting number of milliseconds as an integer. */
     auto ks_int = duration_cast<milliseconds>(k2 - k1);
 
+    auto clock1 = high_resolution_clock::now();
+
+    bucketSortReturningVectorWithNBuckets(arr, nBuckets, SIZE);
+
+    auto clock2 = high_resolution_clock::now();
+
+    auto clock_int = duration_cast<milliseconds>(clock2 - clock1);
+
     std::cout << "Bucket Sort void, not returning array" << std::endl;
     std::cout << ms_int.count() << "ms\n";
 
     std::cout << "Bucket Sort vector, returning a vector" << std::endl;
     std::cout << ks_int.count() << "ms\n";
-        
 
+    std::cout << "Bucket Sort vector, returning a vector with:" << nBuckets << "buckets." << std::endl;
+    std::cout << clock_int.count() << "ms\n";
+      
    
+
+
+
     /* Delete the array */
     delete[] arr;
     return 0;
