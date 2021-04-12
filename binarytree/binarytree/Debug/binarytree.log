@@ -1,0 +1,6 @@
+﻿  main.cpp
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(8,20): warning C4099: 'Node': type name first seen using 'class' now seen using 'struct'
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(5): message : see declaration of 'Node'
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(9,20): warning C4099: 'Node': type name first seen using 'class' now seen using 'struct'
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(5): message : see declaration of 'Node'
+  binarytree.vcxproj -> D:\GitHub\robertslekerom\binarytree\Debug\binarytree.exe

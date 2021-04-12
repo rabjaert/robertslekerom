@@ -1,0 +1,10 @@
+﻿  binarytree.cpp
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(8,20): warning C4099: 'Node': type name first seen using 'class' now seen using 'struct'
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(5): message : see declaration of 'Node'
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(9,20): warning C4099: 'Node': type name first seen using 'class' now seen using 'struct'
+D:\GitHub\robertslekerom\binarytree\binarytree\node.cpp(5): message : see declaration of 'Node'
+  Generating code
+  Previous IPDB and IOBJ mismatch, fall back to full compilation.
+  All 93 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  binarytree.vcxproj -> D:\GitHub\robertslekerom\binarytree\Release\binarytree.exe
