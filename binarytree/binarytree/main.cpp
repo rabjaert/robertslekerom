@@ -26,7 +26,18 @@ for(start = 0; start < SIZE; start++)
  bin.contains("niklas");
  bin.contains("appelsin");
  bin.contains("is");
- bin.contains("jævel");
+ bin.contains("funkærtne");
+ bin.contains("niklas");
+ bin.contains("appelsin");
+ bin.contains("is");
+
+ bin.contains("niklas");
+ bin.contains("appelsin");
+ bin.contains("is");
+
+ bin.contains("niklas");
+ bin.contains("appelsin");
+ bin.contains("is");
 
 
 
