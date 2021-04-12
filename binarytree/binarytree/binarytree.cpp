@@ -2,16 +2,20 @@
 #include "node.cpp"
 
 
-class BinaryTree {
 
-	Node* rootNode;
+struct BinaryTree {
+
+	Node *rootNode;
+	
+	
 
 
 public:BinaryTree()
 
-	{
-		rootNode = NULL;
-	}
+{
+	
+	rootNode = NULL;
+}
 
 	void insertWord(std::string word) {
 		rootNode = insertNode(rootNode, word);
@@ -34,17 +38,23 @@ private:Node* insertNode(Node* node, std::string word) {
 		return node;
 		//deleting pointer
 		delete node;
+	
 	}
 
-private:void traverseXNodes(Node* node) {
-		if (node == NULL) {
+private:void traverseXNodes(Node *node) {
+		
+	
+
+	if (node == NULL) {
 			return;
 		}
-		traverseXNodes(node->left);
-		std::cout << node << std::endl;
-		traverseXNodes(node->right);
-		std::cout << node << std::endl;
-
+		else {
+			traverseXNodes(node->left);
+			std::cout << node << std::endl;
+			traverseXNodes(node->right);
+			
+		}
+	delete node;
 	}
 public:void print() {
 	traverseXNodes(rootNode);

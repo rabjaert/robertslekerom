@@ -8,6 +8,7 @@ int main() {
 	
 	bin.print();
 
+	std::cout << "hello";
 
 
 }
