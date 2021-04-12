@@ -9,7 +9,7 @@
 
 	 
  public: Node(std::string data) {
-		 data = data;
+		 this->data = data;
 		 left = NULL;
 		 right = NULL;
 	 }
