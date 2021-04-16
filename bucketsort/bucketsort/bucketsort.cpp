@@ -4,71 +4,49 @@
 #include <random>
 #include <chrono>
 #include <iterator>
+#include <math.h> 
 
 
-//taken much from geeksforgeeks for test purposes only..
-void bucketSortVoid(float array[], int numberOfBuckets)
+std::vector<int> bucketSortReturningVectorWithNBuckets(int intFromFile[], int numberOfBuckets, int arraySize, int arrayMin, int arrayMax, int arrayRange)
 {
-    std::vector<std::vector<float>> buckets(numberOfBuckets);
+    //adding vector inside a vector
+    std::vector<std::vector<int>> buckets((arraySize / numberOfBuckets) + 10);
     for (int i = 0; i < numberOfBuckets; i++) {
-        buckets[int(numberOfBuckets * array[i])].push_back(array[i]);
+        std::vector<std::vector<int>> list;
+        buckets.insert(buckets.end(), list.begin(), list.end()); 
+       
     }
-    for (int i = 0; i < numberOfBuckets; i++) {
-        std::sort(buckets[i].begin(), buckets[i].end());
-    }
-
-    int index = 0;
-    for (int i = 0; i < numberOfBuckets; i++) {
-        for (size_t j = 0; j < buckets[i].size(); j++) {
-            array[index++] = buckets[i][j];
-        }
-    }
-}
-
-std::vector<float> bucketSortReturningVector(float array[], int numberOfBuckets)
-{
-    std::vector<std::vector<float>> buckets(numberOfBuckets);
-    for (int i = 0; i < numberOfBuckets; i++) {
-        buckets[int(numberOfBuckets * array[i])].push_back(array[i]);
-    }
-    for (int i = 0; i < numberOfBuckets; i++) {
-        std::sort(buckets[i].begin(), buckets[i].end());
-    }
-
-    std::vector<float> result;
-    for (int i = 0; i < numberOfBuckets; i++) {
-        for (size_t j = 0; j < buckets[i].size(); j++) {
-            result.push_back(buckets[i][j]);
-
-        }
-    }
-        
-    return result;
-}
-
-std::vector<float> bucketSortReturningVectorWithNBuckets(float intFromFile[], int numberOfBuckets, int arraySize)
-{
-    
-    std::vector<std::vector<float>> buckets((arraySize / numberOfBuckets));
+    //looping through input array, and calculate bucketNumber. Adding input from array on bucketNumber index.
     for (int i = 0; i < arraySize; i++) {
-        buckets[int(numberOfBuckets * intFromFile[i])].push_back(intFromFile[i]);
+        int bucketNumber = ((intFromFile[i] - arrayMin) / arrayRange);
+        buckets.at(bucketNumber).push_back(intFromFile[i]);
+       
     }
-   
+    
+    //sorting the vector
     for (int i = 0; i < buckets.size(); i++) {
         std::sort(buckets[i].begin(), buckets[i].end());
     }
 
-    std::vector<float> result;
-    for (int i = 0; i < numberOfBuckets; i++) {
-        //std::cout << "bucket: " << i << std::endl;
-        //std::cout << std::endl;
+    //adding the values to a final vector
+    std::vector<int> result;
+    for (int i = 0; i < buckets.size(); i++) {
         for (size_t j = 0; j < buckets[i].size(); j++) {
-           // std::cout << buckets[i][j] << std::endl;
             result.push_back(buckets[i][j]);
+            //std::cout << buckets[i][j] << std::endl;
+            //std::cout << result[i][j] << std::endl;
+            
         }
         
     }
+
+    //printing the elements
+  /*  for(int i = 0; i < result.size(); i++) {
+        std::cout << result[i] << std::endl;
+    }*/
+
     
+
     return result;
 }
 
@@ -77,17 +55,32 @@ int main() {
     /* Random declerations */
     std::random_device rnd_d;
     std::mt19937 rng(rnd_d());
-    std::uniform_real_distribution<float> uniform_dist(0, 1);
+    std::uniform_int_distribution<int> uniform_dist(1, 1000);
 
 
     constexpr size_t SIZE = 1000000;
     constexpr int nBuckets = 10;
+    int min, max;
     /* Allocate the array on the heap. The array might be too large for the stack */
-    float* arr = new float[SIZE];
+    int* arr = new int[SIZE];
     /* Fill the array with randomly distributed floats */
     for (int i = 0; i < SIZE; i++) {
         arr[i] = uniform_dist(rng);
     }
+
+    min = arr[0];
+    max = arr[0];
+
+    for (int i = 0; i < SIZE; i++) {
+        if (min > arr[i]) {
+            min = arr[i];
+        }
+        else if (max < arr[i]) {
+            max = arr[i];
+        }
+    }
+
+    int range = (max - min) / nBuckets;
     
     /* Time measures */
     using std::chrono::high_resolution_clock;
@@ -95,42 +88,25 @@ int main() {
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
+    /*std::cout << "UNSORTED ARRAY..................." << std::endl;
+    for (int i = 0; i < SIZE; i++) {
+        std::cout << arr[i] << std::endl;
+    }
+    std::cout << "------------------------------------------------" << std::endl;*/
+
+
     auto t1 = high_resolution_clock::now();
     /* Sort */
-    bucketSortVoid(arr, SIZE);
-    //bucketSort2(arr, SIZE);
+    bucketSortReturningVectorWithNBuckets(arr, nBuckets, SIZE, min, max, range);
     auto t2 = high_resolution_clock::now();
 
     /* Getting number of milliseconds as an integer. */
     auto ms_int = duration_cast<milliseconds>(t2 - t1);
 
-    auto k1 = high_resolution_clock::now();
-    /* Sort */
-    bucketSortReturningVector(arr, SIZE);
-    //bucketSort2(arr, SIZE);
-    auto k2 = high_resolution_clock::now();
-    /* Getting number of milliseconds as an integer. */
-    auto ks_int = duration_cast<milliseconds>(k2 - k1);
-
-    auto clock1 = high_resolution_clock::now();
-
-    bucketSortReturningVectorWithNBuckets(arr, nBuckets, SIZE);
-
-    auto clock2 = high_resolution_clock::now();
-
-    auto clock_int = duration_cast<milliseconds>(clock2 - clock1);
-
-    std::cout << "Bucket Sort void, not returning array" << std::endl;
-    std::cout << ms_int.count() << "ms\n";
-
-    std::cout << "Bucket Sort vector, returning a vector" << std::endl;
-    std::cout << ks_int.count() << "ms\n";
-
-    std::cout << "Bucket Sort vector, returning a vector with:" << nBuckets << "buckets." << std::endl;
-    std::cout << clock_int.count() << "ms\n";
-      
-   
-
+    std::cout << "Bucket Sort vector implementation in C++ compared to Java"  << std::endl;
+    std::cout << "Average time taken to bucketsort 10^6 numbers with 10 buckets is: 400-500ms" << std::endl;
+    std::cout << "Bucket Sort vector implementation in C++ with: " << nBuckets << "buckets." << std::endl;
+    std::cout << "Time taken:" << " " << ms_int.count() << "ms\n";
 
 
     /* Delete the array */
