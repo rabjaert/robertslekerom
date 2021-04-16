@@ -7,7 +7,7 @@
 #include <math.h> 
 
 
-std::vector<int> bucketSortReturningVectorWithNBuckets(int intFromFile[], int numberOfBuckets, int arraySize, int arrayMin, int arrayMax, int arrayRange)
+std::vector<int> bucketSortReturningVectorWithNBuckets(int intFromFile[], int numberOfBuckets, int arraySize, int arrayMin, int arrayMax, int arrayRange, bool print)
 {
     //adding vector inside a vector
     std::vector<std::vector<int>> buckets((arraySize / numberOfBuckets) + 10);
@@ -39,14 +39,13 @@ std::vector<int> bucketSortReturningVectorWithNBuckets(int intFromFile[], int nu
         }
         
     }
-
-    //printing the elements
-  /*  for(int i = 0; i < result.size(); i++) {
-        std::cout << result[i] << std::endl;
-    }*/
-
-    
-
+    if (print) {
+        //printing the elements
+        for (int i = 0; i < result.size(); i++) {
+            std::cout << result[i] << std::endl;
+        }
+    }
+   
     return result;
 }
 
@@ -56,8 +55,12 @@ int main() {
     std::random_device rnd_d;
     std::mt19937 rng(rnd_d());
     std::uniform_int_distribution<int> uniform_dist(1, 1000);
+    std::uniform_int_distribution<int> uniform_dist1(1, 99);
 
 
+    /*----------------------------------------------------------*/
+    /*-----------------------BIG ARRAY---------------------------*/
+    /*----------------------------------------------------------*/
     constexpr size_t SIZE = 1000000;
     constexpr int nBuckets = 10;
     int min, max;
@@ -81,6 +84,41 @@ int main() {
     }
 
     int range = (max - min) / nBuckets;
+    /*---------------------------------------------------------*/
+    /*----------------------------------------------------------*/
+    /*----------------------------------------------------------*/
+    
+   
+    
+    /*----------------------------------------------------------*/
+    /*-----------------------SMALL ARRAY---------------------------*/
+    /*----------------------------------------------------------*/
+    
+    constexpr size_t SIZESmallArray = 20;
+    int minSmallArray, maxSmallArray;
+    /* Allocate the array on the heap. The array might be too large for the stack */
+    int* smallArray = new int[SIZESmallArray];
+    /* Fill the array with randomly distributed floats */
+    for (int i = 0; i < SIZESmallArray; i++) {
+        smallArray[i] = uniform_dist1(rng);
+    }
+
+    minSmallArray = smallArray[0];
+    maxSmallArray = smallArray[0];
+
+    for (int i = 0; i < SIZESmallArray; i++) {
+        if (minSmallArray > smallArray[i]) {
+            minSmallArray = smallArray[i];
+        }
+        else if (maxSmallArray < smallArray[i]) {
+            maxSmallArray = smallArray[i];
+        }
+    }
+    int rangeSmallArray = (maxSmallArray - minSmallArray) / nBuckets;
+    
+    /*---------------------------------------------------------*/
+    /*----------------------------------------------------------*/
+    /*----------------------------------------------------------*/
     
     /* Time measures */
     using std::chrono::high_resolution_clock;
@@ -88,29 +126,38 @@ int main() {
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    /*std::cout << "UNSORTED ARRAY..................." << std::endl;
-    for (int i = 0; i < SIZE; i++) {
-        std::cout << arr[i] << std::endl;
-    }
-    std::cout << "------------------------------------------------" << std::endl;*/
+   
 
+    std::cout << "Bucket Sort vector implementation in C++ compared to Java" << std::endl;
+    std::cout << "Printing small array first to see if it works properly" << std::endl;
+    
+    std::cout << "UNSORTED ARRAY..................." << std::endl;
+   for (int i = 0; i < SIZESmallArray; i++) {
+       std::cout << smallArray[i] << std::endl;
+   }
+   std::cout << "------------------------------------------------" << std::endl;
+  
+   std::cout << "SORTED ARRAY..................." << std::endl;
+   bucketSortReturningVectorWithNBuckets(smallArray, nBuckets, SIZESmallArray, minSmallArray, maxSmallArray, rangeSmallArray, true);
+   std::cout << "------------------------------------------------" << std::endl;
 
     auto t1 = high_resolution_clock::now();
     /* Sort */
-    bucketSortReturningVectorWithNBuckets(arr, nBuckets, SIZE, min, max, range);
+    bucketSortReturningVectorWithNBuckets(arr, nBuckets, SIZE, min, max, range, false);
     auto t2 = high_resolution_clock::now();
 
     /* Getting number of milliseconds as an integer. */
     auto ms_int = duration_cast<milliseconds>(t2 - t1);
 
-    std::cout << "Bucket Sort vector implementation in C++ compared to Java"  << std::endl;
-    std::cout << "Average time taken to bucketsort 10^6 numbers with 10 buckets is: 400-500ms" << std::endl;
+    std::cout << std::endl;
     std::cout << "Bucket Sort vector implementation in C++ with: " << nBuckets << "buckets." << std::endl;
+    std::cout << "Average time taken to bucketsort 10^6 numbers with 10 buckets in JAVA is: 400-500ms" << std::endl;
     std::cout << "Time taken:" << " " << ms_int.count() << "ms\n";
 
 
     /* Delete the array */
     delete[] arr;
+    delete[]smallArray;
     return 0;
 
 
